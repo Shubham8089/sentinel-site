@@ -33,13 +33,6 @@ export default defineNuxtConfig({
         { property: 'og:type', content: 'website' },
       ],
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
-      script: [
-        {
-          src: 'https://dpdp-prod.vercel.app/sdk/v1/s.js',
-          'data-org': 'd94c503e-f36d-48bb-b34b-8fc1413cdccb',
-          async: true,
-        },
-      ],
     },
   },
 })
