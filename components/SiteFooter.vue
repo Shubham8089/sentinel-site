@@ -12,6 +12,14 @@
 
       <div class="flex items-center gap-8">
         <a
+          href="https://dpdp-prod.vercel.app/portal/landing-page/trust"
+          target="_blank"
+          rel="noopener"
+          class="text-[0.875rem] text-muted transition-colors hover:text-ink"
+        >
+          Trust center
+        </a>
+        <a
           href="mailto:hello@sentinel.co.in"
           class="text-[0.875rem] text-muted transition-colors hover:text-ink"
         >

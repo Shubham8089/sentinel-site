@@ -7,6 +7,8 @@
       Skip to content
     </a>
 
+    <div data-sentinel="notice"></div>
+
     <SiteHeader />
 
     <main id="main">
@@ -14,6 +16,8 @@
       <ProofLine />
       <PricingLine />
     </main>
+
+    <div data-sentinel="policy" data-slug="privacy-policy"></div>
 
     <SiteFooter />
     <WaitlistModal />
