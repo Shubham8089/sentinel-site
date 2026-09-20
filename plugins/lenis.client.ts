@@ -1,22 +1,27 @@
 import Lenis from 'lenis'
-import 'lenis/dist/lenis.css'
 
-// Smooth scroll. Skipped entirely when the visitor prefers reduced motion.
 export default defineNuxtPlugin(() => {
-  let lenis: Lenis | null = null
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    lenis = new Lenis({
-      duration: 1.1,
-      easing: (t: number) => 1 - Math.pow(1 - t, 3),
-      smoothWheel: true,
-    })
-    const raf = (time: number) => {
-      lenis!.raf(time)
-      requestAnimationFrame(raf)
-    }
-    requestAnimationFrame(raf)
+  if (reduced) {
+    return { provide: { lenis: null as Lenis | null } }
   }
 
-  return { provide: { lenis } }
+  const lenis = new Lenis({ duration: 1.05, smoothWheel: true, touchMultiplier: 1.6 })
+
+  let frame = 0
+  const loop = (time: number) => {
+    lenis.raf(time)
+    frame = requestAnimationFrame(loop)
+  }
+  frame = requestAnimationFrame(loop)
+
+  if (import.meta.hot) {
+    import.meta.hot.dispose(() => {
+      cancelAnimationFrame(frame)
+      lenis.destroy()
+    })
+  }
+
+  return { provide: { lenis: lenis as Lenis | null } }
 })

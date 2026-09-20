@@ -1,0 +1,353 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── tokens ─────────────────────────────────────────────── */
+:root {
+  --bg: #ffffff;
+  --recede: #f3f5f4;
+  --ink: #131916;
+  --muted: #667069;
+  --line: #e7e9e7;
+  --accent: #0f5d4c;
+  --accent-hi: #0b4a3d;
+  --accent-bg: #e7f0ec;
+  --ok: #3b6d11;
+  --warn: #ba7517;
+
+  /* Tailwind's /opacity modifier can't split a raw var() colour, so the two
+     translucent surfaces get channel tokens of their own. */
+  --ink-rgb: 19 25 22;
+  --bg-rgb: 255 255 255;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    overflow-x: clip;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-weight: 400;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--accent-bg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ── primitives ─────────────────────────────────────────── */
+@layer components {
+  .wrap {
+    @apply mx-auto w-full max-w-6xl px-6 sm:px-8;
+  }
+
+  .cta {
+    @apply inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5
+           text-[0.9375rem] font-medium text-white transition-colors duration-200;
+  }
+  .cta:hover {
+    background: var(--accent-hi);
+  }
+
+  .cta-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  .h-display {
+    @apply text-[2.5rem] leading-[1.06] sm:text-[3.25rem] lg:text-[3.75rem];
+    letter-spacing: -0.035em;
+  }
+
+  .h-beat {
+    @apply text-[2rem] leading-[1.1] sm:text-[2.5rem] lg:text-[2.875rem];
+    letter-spacing: -0.032em;
+  }
+
+  .sub {
+    @apply mt-5 max-w-prose text-[1.0625rem] leading-relaxed text-muted sm:text-lg;
+  }
+
+  .site-header {
+    background: rgb(var(--bg-rgb) / 0.85);
+  }
+
+  .modal-backdrop {
+    background: rgb(var(--ink-rgb) / 0.28);
+  }
+}
+
+/* ── the stack ──────────────────────────────────────────── */
+.stack {
+  position: relative;
+  height: clamp(470px, 58vh, 560px);
+  /* a close camera is what makes the Z offsets read as real depth */
+  perspective: 900px;
+  perspective-origin: 50% 50%;
+}
+
+.plane {
+  --dy: 0px;
+  --dz: 0px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(390px, 100%);
+  transform: translate(-50%, -50%) rotateX(var(--tilt, 22deg))
+    translate3d(0, calc(var(--ty) + var(--dy)), calc(var(--tz) + var(--dz)));
+  transition:
+    transform 0.4s var(--ease),
+    opacity 0.4s var(--ease),
+    filter 0.4s var(--ease);
+  will-change: transform, opacity;
+}
+
+.plane--trust {
+  --ty: -168px;
+  --tz: 84px;
+  z-index: 3;
+}
+.plane--consent {
+  --ty: 0px;
+  --tz: 0px;
+  z-index: 2;
+}
+.plane--rights {
+  --ty: 168px;
+  --tz: -84px;
+  z-index: 1;
+}
+
+/* the active layer draws toward the middle and comes forward */
+.plane--trust[data-state='on'] {
+  --ty: -66px;
+  --tz: 150px;
+  z-index: 4;
+}
+.plane--consent[data-state='on'] {
+  --ty: 0px;
+  --tz: 150px;
+  z-index: 4;
+}
+.plane--rights[data-state='on'] {
+  --ty: 66px;
+  --tz: 150px;
+  z-index: 4;
+}
+
+.plane[data-state='off'] {
+  opacity: 0.4;
+  filter: grayscale(0.9);
+}
+
+.stack[data-merged='true'] .plane--trust {
+  --ty: -11px;
+  --tz: 16px;
+}
+.stack[data-merged='true'] .plane--consent {
+  --ty: 0px;
+  --tz: 0px;
+}
+.stack[data-merged='true'] .plane--rights {
+  --ty: 11px;
+  --tz: -16px;
+}
+
+/* ── a slice of real product UI ─────────────────────────── */
+.slice {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0.875rem 1rem 1rem;
+  box-shadow:
+    0 28px 48px -28px rgba(19, 25, 22, 0.22),
+    0 2px 6px -2px rgba(19, 25, 22, 0.05);
+  transition:
+    border-color 0.4s var(--ease),
+    box-shadow 0.4s var(--ease);
+}
+
+.plane[data-state='on'] .slice {
+  border-color: var(--accent);
+  box-shadow:
+    0 40px 64px -32px rgba(19, 25, 22, 0.26),
+    0 2px 6px -2px rgba(19, 25, 22, 0.05);
+}
+
+.slice__head {
+  @apply flex items-center justify-between gap-3 pb-2.5;
+  border-bottom: 1px solid var(--line);
+}
+
+.slice__label {
+  @apply text-[0.8125rem] font-medium text-muted transition-colors duration-300;
+}
+
+.plane[data-state='on'] .slice__label {
+  color: var(--accent);
+}
+
+.slice__rows {
+  @apply mt-1;
+}
+
+.slice__rows li {
+  @apply flex items-center justify-between gap-4 py-2 text-[0.875rem];
+  border-bottom: 1px solid var(--line);
+}
+.slice__rows li:last-child {
+  border-bottom: 0;
+}
+
+.slice__meta {
+  @apply text-[0.8125rem] text-muted;
+}
+
+.slice__foot {
+  @apply mt-1.5 flex items-center justify-between gap-4 pt-2.5 text-[0.8125rem];
+  border-top: 1px solid var(--line);
+}
+
+.chip {
+  @apply rounded-full px-2.5 py-1 font-mono text-[0.6875rem];
+  background: var(--recede);
+  color: var(--muted);
+}
+
+.chip--accent {
+  background: var(--accent-bg);
+  color: var(--accent-hi);
+}
+
+.dot {
+  @apply mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle;
+  background: var(--ok);
+}
+
+.mock-btn {
+  @apply inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-[0.8125rem] font-medium;
+}
+.mock-btn--ghost {
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.mock-btn--solid {
+  background: var(--ink);
+  color: #fff;
+}
+
+/* the one small in-slice reveal: a request landing */
+.rise {
+  opacity: 1;
+  transform: none;
+}
+.plane[data-state='on'] .rise {
+  animation: rise 0.5s var(--ease) 0.12s both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── the spine: static by default, pinned where it earns it ── */
+.spine-motion {
+  display: none;
+}
+
+.beats {
+  display: grid;
+}
+
+/* The outgoing line clears out before the incoming one arrives, so the two
+   never sit on top of each other mid-swap. */
+.beat {
+  grid-area: 1 / 1;
+  align-self: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition:
+    opacity 0.18s var(--ease),
+    transform 0.18s var(--ease),
+    visibility 0s linear 0.18s;
+}
+
+.beat[data-on='true'] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.34s var(--ease) 0.14s,
+    transform 0.38s var(--ease) 0.14s,
+    visibility 0s linear 0s;
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  /* the pin sticks inside its own parent, so the travel lives here */
+  .spine-motion {
+    display: block;
+    height: 520vh;
+  }
+  .spine-static {
+    display: none;
+  }
+  .spine-pin {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 4rem; /* clears the sticky top bar */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

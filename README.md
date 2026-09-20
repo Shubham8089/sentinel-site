@@ -1,22 +1,33 @@
-# Sentinel site
+# Sentinel — landing page
 
-Marketing landing page for Sentinel, the consent, trust and rights layer for DPDP. Nuxt 3, Tailwind, deployed on Vercel.
+Marketing site for Sentinel, the front door of DPDP for Indian SMBs: a public trust
+center, consent, and a rights portal.
 
-Everything interactive on the page (consent banner, rights demo, trust page) is a **mock**: local state only, no calls to the real product.
+Everything shown on the page is a mock component. The real product is not imported here.
 
-## Develop
+## Stack
+
+- Nuxt 3 + TypeScript
+- Tailwind (`@nuxtjs/tailwindcss`), tokens in `assets/css/tailwind.css`
+- Geist / Geist Mono via `@nuxt/fonts`
+- Lenis for smooth scroll; the pinned spine is a small scroll listener in
+  `components/ScrollSpine.vue` (no animation library)
+- Waitlist is a Tally embed mounted on demand in `components/WaitlistModal.vue`
+
+## The spine
+
+`ScrollSpine.vue` is the whole story: a hero beat, three layer beats, and a merge.
+On desktop with motion allowed it pins and lifts one layer at a time. Below 1024px, or
+under `prefers-reduced-motion`, the pin is off and the same beats read straight down —
+that switch lives in CSS, so it survives without JavaScript.
+
+## Local
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000
-npm run build
-npm run typecheck
+npm run dev
 ```
 
-## Notes
+## Deploy
 
-- Design tokens live in `assets/css/main.css` and are wired into `tailwind.config.ts`.
-- Fonts (Fraunces, Inter, JetBrains Mono) are loaded through `@nuxt/fonts`.
-- Setup-day requests open a pre-filled email. Address, and a future booking link, live in `utils/site.ts` (`SITE.bookingEmail` / `SITE.bookingUrl`).
-- `pages/our-trust-page.vue` makes factual claims about this site (no cookies, no trackers, fonts self-hosted, Vercel hosting). If you change any of that, update the page and bump its version.
-- This is a separate project from the app repo. Do not import from it.
+Vercel, zero config.
